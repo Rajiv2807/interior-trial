@@ -19,19 +19,13 @@
     const scene = new THREE.Scene();
     scene.background = new THREE.Color(0xf0f0f0);
 
-    const camera = new THREE.PerspectiveCamera(
-      75,
-      window.innerWidth / window.innerHeight,
-      0.1,
-      1000
-    );
+    const camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 1000);
     camera.position.set(0, 10, 20);
 
     const renderer = new THREE.WebGLRenderer({ antialias: true });
     renderer.setSize(window.innerWidth, window.innerHeight);
     document.body.appendChild(renderer.domElement);
 
-    // OrbitControls
     const controls = new THREE.OrbitControls(camera, renderer.domElement);
     controls.target.set(0, 0, 0);
     controls.update();
@@ -45,47 +39,45 @@
     scene.add(directional);
 
     // Floor base
-    const floorGeometry = new THREE.PlaneGeometry(20, 20);
-    const floorMaterial = new THREE.MeshPhongMaterial({
-      color: 0xdddddd,
-      side: THREE.DoubleSide
-    });
+    const floorGeometry = new THREE.PlaneGeometry(25, 25);
+    const floorMaterial = new THREE.MeshPhongMaterial({ color: 0xdddddd, side: THREE.DoubleSide });
     const floor = new THREE.Mesh(floorGeometry, floorMaterial);
     floor.rotation.x = -Math.PI / 2;
     scene.add(floor);
 
-    // Load default texture
+    // Load sample 2D plan image as texture
     const loader = new THREE.TextureLoader();
-    loader.load("https://threejs.org/examples/textures/uv_grid_opengl.jpg", (texture) => {
-      const planGeometry = new THREE.PlaneGeometry(10, 10);
-      const planMaterial = new THREE.MeshBasicMaterial({
-        map: texture,
-        side: THREE.DoubleSide
-      });
-      const plan = new THREE.Mesh(planGeometry, planMaterial);
-      plan.rotation.x = -Math.PI / 2;
-      plan.position.y = 0.01; // avoid z-fighting
-      scene.add(plan);
+    loader.load(
+      // Replace this URL with your uploaded plan image or any hosted floor plan
+      "https://threejs.org/examples/textures/uv_grid_opengl.jpg",
+      (texture) => {
+        const planGeometry = new THREE.PlaneGeometry(15, 15);
+        const planMaterial = new THREE.MeshBasicMaterial({ map: texture, side: THREE.DoubleSide });
+        const plan = new THREE.Mesh(planGeometry, planMaterial);
+        plan.rotation.x = -Math.PI / 2;
+        plan.position.y = 0.01; // avoid z-fighting
+        scene.add(plan);
 
-      // Add walls
-      const wallMaterial = new THREE.MeshPhongMaterial({ color: 0x888888 });
+        // Add walls around the plan
+        const wallMaterial = new THREE.MeshPhongMaterial({ color: 0x888888 });
 
-      const wallFront = new THREE.Mesh(new THREE.BoxGeometry(10, 2, 0.2), wallMaterial);
-      wallFront.position.set(0, 1, 5);
-      scene.add(wallFront);
+        const wallFront = new THREE.Mesh(new THREE.BoxGeometry(15, 2, 0.2), wallMaterial);
+        wallFront.position.set(0, 1, 7.5);
+        scene.add(wallFront);
 
-      const wallBack = wallFront.clone();
-      wallBack.position.set(0, 1, -5);
-      scene.add(wallBack);
+        const wallBack = wallFront.clone();
+        wallBack.position.set(0, 1, -7.5);
+        scene.add(wallBack);
 
-      const wallLeft = new THREE.Mesh(new THREE.BoxGeometry(0.2, 2, 10), wallMaterial);
-      wallLeft.position.set(-5, 1, 0);
-      scene.add(wallLeft);
+        const wallLeft = new THREE.Mesh(new THREE.BoxGeometry(0.2, 2, 15), wallMaterial);
+        wallLeft.position.set(-7.5, 1, 0);
+        scene.add(wallLeft);
 
-      const wallRight = wallLeft.clone();
-      wallRight.position.set(5, 1, 0);
-      scene.add(wallRight);
-    });
+        const wallRight = wallLeft.clone();
+        wallRight.position.set(7.5, 1, 0);
+        scene.add(wallRight);
+      }
+    );
 
     // Render loop
     function animate() {
