@@ -12,21 +12,26 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
   <script src="https://threejs.org/examples/js/controls/OrbitControls.js"></script>
   <script>
+    // Scene setup
     const scene = new THREE.Scene();
     scene.background = new THREE.Color(0xf0f0f0);
 
     const camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 1000);
     camera.position.set(0, 10, 20);
 
-    const renderer = new THREE.WebGLRenderer();
+    const renderer = new THREE.WebGLRenderer({ antialias: true });
     renderer.setSize(window.innerWidth, window.innerHeight);
     document.body.appendChild(renderer.domElement);
 
     const controls = new THREE.OrbitControls(camera, renderer.domElement);
 
-    const light = new THREE.DirectionalLight(0xffffff, 1);
-    light.position.set(10, 20, 10);
-    scene.add(light);
+    // Lighting
+    const ambient = new THREE.AmbientLight(0xffffff, 0.6);
+    scene.add(ambient);
+
+    const directional = new THREE.DirectionalLight(0xffffff, 0.8);
+    directional.position.set(10, 20, 10);
+    scene.add(directional);
 
     // Floor base
     const floorGeometry = new THREE.PlaneGeometry(20, 20);
@@ -42,7 +47,7 @@
       const planMaterial = new THREE.MeshBasicMaterial({ map: texture, side: THREE.DoubleSide });
       const plan = new THREE.Mesh(planGeometry, planMaterial);
       plan.rotation.x = -Math.PI / 2;
-      plan.position.y = 0.01;
+      plan.position.y = 0.01; // Slightly above floor to avoid z-fighting
       scene.add(plan);
 
       // Add simple walls
@@ -65,12 +70,14 @@
       scene.add(wallRight);
     });
 
+    // Render loop
     function animate() {
       requestAnimationFrame(animate);
       renderer.render(scene, camera);
     }
     animate();
 
+    // Handle window resize
     window.addEventListener('resize', () => {
       camera.aspect = window.innerWidth / window.innerHeight;
       camera.updateProjectionMatrix();
