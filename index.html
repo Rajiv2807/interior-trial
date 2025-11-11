@@ -8,23 +8,13 @@
     canvas { display: block; }
   </style>
 </head>
-<body>
-
-  <script type="importmap">
-      {
-        "imports": {
-          "THREE": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js"
-        }
-      }
-    </script>
-
-  
+<body>  
   
   <script type="module">
-  //import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js';
-  import { OrbitControls } from 'https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/controls/OrbitControls.js';
-  import { DragControls } from 'https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/controls/DragControls.js';
-  import { GLTFLoader } from 'https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/loaders/GLTFLoader.js';
+  import * as THREE from 'https://unpkg.com/three@0.126.1/build/three.module.js';
+  import { OrbitControls } from 'https://unpkg.com/three@0.126.1/examples/jsm/controls/OrbitControls.js';
+  import { DragControls } from 'https://unpkg.com/three@0.126.1/examples/jsm/controls/DragControls.js';
+  import { GLTFLoader } from 'https://unpkg.com/three@0.126.1/examples/jsm/loaders/GLTFLoader.js';
   
   // Scene dkdk
   const scene = new THREE.Scene();
