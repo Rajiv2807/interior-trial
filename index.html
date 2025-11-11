@@ -67,7 +67,7 @@
 
   // Furniture (GLTF model)
   const loader = new GLTFLoader();
-  loader.load('assets/chair.glb', (gltf) => {
+  loader.load('chair.glb', (gltf) => {
     const chair = gltf.scene;
     chair.scale.set(1, 1, 1);
     chair.position.set(2, 0, 2);
