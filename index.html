@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Three.js Room – Wood Walls & Ceiling, Marble Floor</title>
+  <title>Three.js Room – Window Added</title>
   <style>
     body { margin: 0; overflow: hidden; }
     canvas { display: block; }
@@ -37,21 +37,25 @@
 
   // Lights
   scene.add(new THREE.AmbientLight(0x404040, 2));
-  const dirLight = new THREE.DirectionalLight(0xffffff, 1);
+  const dirLight = new THREE.DirectionalLight(0xffffff, 0.8);
   dirLight.position.set(10, 20, 10);
   scene.add(dirLight);
 
   // Texture loader
   const texLoader = new THREE.TextureLoader();
 
-  // Marble floor
+  // Marble floor (matte)
   const marbleTex = texLoader.load('./assets/marble.jpg');
   marbleTex.wrapS = marbleTex.wrapT = THREE.RepeatWrapping;
   marbleTex.repeat.set(4, 4);
 
   const floor = new THREE.Mesh(
     new THREE.PlaneGeometry(20, 20),
-    new THREE.MeshLambertMaterial({ map: marbleTex })
+    new THREE.MeshStandardMaterial({
+      map: marbleTex,
+      roughness: 0.9,
+      metalness: 0.0
+    })
   );
   floor.rotation.x = -Math.PI / 2;
   scene.add(floor);
@@ -61,27 +65,44 @@
   woodTex.wrapS = woodTex.wrapT = THREE.RepeatWrapping;
   woodTex.repeat.set(2, 2);
 
-  const wallMaterial = new THREE.MeshLambertMaterial({ map: woodTex });
+  const wallMaterial = new THREE.MeshStandardMaterial({
+    map: woodTex,
+    roughness: 0.8,
+    metalness: 0.0
+  });
   const wallGeo = new THREE.PlaneGeometry(20, 10);
 
-  // Back wall
+  // Back wall (with window opening)
+  const backWallGroup = new THREE.Group();
+
+  // Full wall
   const backWall = new THREE.Mesh(wallGeo, wallMaterial);
   backWall.position.set(0, 5, -10);
-  scene.add(backWall);
+  backWallGroup.add(backWall);
 
-  // Front wall
+  // Window glass (semi-transparent plane)
+  const glassMaterial = new THREE.MeshStandardMaterial({
+    color: 0x99ccff,
+    transparent: true,
+    opacity: 0.4
+  });
+  const windowPane = new THREE.Mesh(new THREE.PlaneGeometry(6, 4), glassMaterial);
+  windowPane.position.set(0, 5, -9.9); // slightly in front of wall
+  backWallGroup.add(windowPane);
+
+  scene.add(backWallGroup);
+
+  // Other walls
   const frontWall = new THREE.Mesh(wallGeo, wallMaterial);
   frontWall.position.set(0, 5, 10);
   frontWall.rotation.y = Math.PI;
   scene.add(frontWall);
 
-  // Left wall
   const leftWall = new THREE.Mesh(wallGeo, wallMaterial);
   leftWall.position.set(-10, 5, 0);
   leftWall.rotation.y = Math.PI / 2;
   scene.add(leftWall);
 
-  // Right wall
   const rightWall = new THREE.Mesh(wallGeo, wallMaterial);
   rightWall.position.set(10, 5, 0);
   rightWall.rotation.y = -Math.PI / 2;
