@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Three.js Floor Plan Demo (Modules)</title>
+  <title>Three.js Floor Plan Demo</title>
   <style>
     body { margin: 0; }
     canvas { display: block; }
@@ -15,7 +15,6 @@
   import { DragControls } from 'https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/controls/DragControls.js';
   import { GLTFLoader } from 'https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/loaders/GLTFLoader.js';
 
-  // ... your Three.js code here ...
   // Scene
   const scene = new THREE.Scene();
   scene.background = new THREE.Color(0xf0f0f0);
@@ -30,9 +29,8 @@
   renderer.shadowMap.enabled = true;
   document.body.appendChild(renderer.domElement);
 
-  // Controls (modules return classes, not on THREE namespace)
+  // Controls
   const controls = new OrbitControls(camera, renderer.domElement);
-  controls.enableDamping = true;
 
   // Lights
   const ambientLight = new THREE.AmbientLight(0x404040, 2);
@@ -50,7 +48,7 @@
   floor.receiveShadow = true;
   scene.add(floor);
 
-  // Walls (extruded from 2D shape)
+  // Walls
   const shape = new THREE.Shape();
   shape.moveTo(0, 0);
   shape.lineTo(10, 0);
@@ -62,11 +60,11 @@
   const wallGeometry = new THREE.ExtrudeGeometry(shape, extrudeSettings);
   const wallMaterial = new THREE.MeshLambertMaterial({ color: 0xffffff });
   const walls = new THREE.Mesh(wallGeometry, wallMaterial);
-  walls.position.set(-5, 0, -4); // center it
+  walls.position.set(-5, 0, -4);
   walls.castShadow = true;
   scene.add(walls);
 
-  // Furniture (GLTF model)
+  // Furniture
   const loader = new GLTFLoader();
   loader.load('chair.glb', (gltf) => {
     const chair = gltf.scene;
@@ -75,13 +73,12 @@
     chair.traverse((obj) => { if (obj.isMesh) obj.castShadow = true; });
     scene.add(chair);
 
-    // Drag controls
     const dragControls = new DragControls([chair], camera, renderer.domElement);
     dragControls.addEventListener('dragstart', () => controls.enabled = false);
     dragControls.addEventListener('dragend', () => controls.enabled = true);
   });
 
-  // Resize wall function
+  // Resize wall
   function resizeWall(newLength) {
     walls.scale.x = newLength / wallGeometry.parameters.width;
   }
@@ -95,7 +92,6 @@
   }
   animate();
 
-  // Resize handling
   window.addEventListener('resize', () => {
     camera.aspect = window.innerWidth / window.innerHeight;
     camera.updateProjectionMatrix();
