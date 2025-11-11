@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Three.js Room – Chandelier Added</title>
+  <title>Three.js Room – Chandelier Model</title>
   <style>
     body { margin: 0; overflow: hidden; }
     canvas { display: block; }
@@ -12,6 +12,7 @@
 <script type="module">
   import * as THREE from 'https://unpkg.com/three@0.126.1/build/three.module.js';
   import { OrbitControls } from 'https://unpkg.com/three@0.126.1/examples/jsm/controls/OrbitControls.js';
+  import { GLTFLoader } from 'https://unpkg.com/three@0.126.1/examples/jsm/loaders/GLTFLoader.js';
 
   // Scene
   const scene = new THREE.Scene();
@@ -123,35 +124,14 @@
   ceiling.position.y = 10;
   scene.add(ceiling);
 
-  // --- Chandelier (placeholder geometry) ---
-  const chandelierGroup = new THREE.Group();
-
-  // Central sphere (lamp body)
-  const body = new THREE.Mesh(
-    new THREE.SphereGeometry(0.5, 16, 16),
-    new THREE.MeshStandardMaterial({ color: 0xffffcc, emissive: 0x333300 })
-  );
-  body.position.set(0, 9, 0);
-  chandelierGroup.add(body);
-
-  // Arms with small bulbs
-  const bulbMaterial = new THREE.MeshStandardMaterial({ color: 0xffffff, emissive: 0x555555 });
-  for (let i = 0; i < 6; i++) {
-    const angle = (i / 6) * Math.PI * 2;
-    const bulb = new THREE.Mesh(new THREE.SphereGeometry(0.2, 12, 12), bulbMaterial);
-    bulb.position.set(Math.cos(angle) * 1.5, 9, Math.sin(angle) * 1.5);
-    chandelierGroup.add(bulb);
-  }
-
-  // Chain (cylinder)
-  const chain = new THREE.Mesh(
-    new THREE.CylinderGeometry(0.05, 0.05, 1, 8),
-    new THREE.MeshStandardMaterial({ color: 0x444444 })
-  );
-  chain.position.set(0, 9.5, 0);
-  chandelierGroup.add(chain);
-
-  scene.add(chandelierGroup);
+  // --- Load chandelier.glb ---
+  const loader = new GLTFLoader();
+  loader.load('./assets/chandelier.glb', (gltf) => {
+    const chandelier = gltf.scene;
+    chandelier.position.set(0, 9, 0); // hang from ceiling center
+    chandelier.scale.set(1, 1, 1);    // adjust scale if needed
+    scene.add(chandelier);
+  });
 
   // Animate
   function animate() {
