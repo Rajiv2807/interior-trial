@@ -26,26 +26,17 @@
   // Renderer
   const renderer = new THREE.WebGLRenderer({ antialias: true });
   renderer.setSize(window.innerWidth, window.innerHeight);
-  renderer.shadowMap.enabled = true;
   document.body.appendChild(renderer.domElement);
 
   // Controls
   const controls = new OrbitControls(camera, renderer.domElement);
 
-  // Lights
-  const ambientLight = new THREE.AmbientLight(0x404040, 2);
-  scene.add(ambientLight);
-  const dirLight = new THREE.DirectionalLight(0xffffff, 1);
-  dirLight.position.set(10, 20, 10);
-  dirLight.castShadow = true;
-  scene.add(dirLight);
-
   // Floor
-  const floorGeometry = new THREE.PlaneGeometry(20, 20);
-  const floorMaterial = new THREE.MeshLambertMaterial({ color: 0xdddddd });
-  const floor = new THREE.Mesh(floorGeometry, floorMaterial);
+  const floor = new THREE.Mesh(
+    new THREE.PlaneGeometry(20, 20),
+    new THREE.MeshLambertMaterial({ color: 0xdddddd })
+  );
   floor.rotation.x = -Math.PI / 2;
-  floor.receiveShadow = true;
   scene.add(floor);
 
   // Walls
@@ -56,33 +47,30 @@
   shape.lineTo(0, 8);
   shape.lineTo(0, 0);
 
-  const extrudeSettings = { depth: 3, bevelEnabled: false };
-  const wallGeometry = new THREE.ExtrudeGeometry(shape, extrudeSettings);
-  const wallMaterial = new THREE.MeshLambertMaterial({ color: 0xffffff });
-  const walls = new THREE.Mesh(wallGeometry, wallMaterial);
+  const walls = new THREE.Mesh(
+    new THREE.ExtrudeGeometry(shape, { depth: 3, bevelEnabled: false }),
+    new THREE.MeshLambertMaterial({ color: 0xffffff })
+  );
   walls.position.set(-5, 0, -4);
-  walls.castShadow = true;
   scene.add(walls);
 
-  // Furniture
+  // Light
+  scene.add(new THREE.AmbientLight(0x404040, 2));
+  const dirLight = new THREE.DirectionalLight(0xffffff, 1);
+  dirLight.position.set(10, 20, 10);
+  scene.add(dirLight);
+
+  // Furniture (replace with your own GLB path)
   const loader = new GLTFLoader();
-  loader.load('chair.glb', (gltf) => {
+  loader.load('./assets/chair.glb', (gltf) => {
     const chair = gltf.scene;
-    chair.scale.set(1, 1, 1);
     chair.position.set(2, 0, 2);
-    chair.traverse((obj) => { if (obj.isMesh) obj.castShadow = true; });
     scene.add(chair);
 
     const dragControls = new DragControls([chair], camera, renderer.domElement);
     dragControls.addEventListener('dragstart', () => controls.enabled = false);
     dragControls.addEventListener('dragend', () => controls.enabled = true);
   });
-
-  // Resize wall
-  function resizeWall(newLength) {
-    walls.scale.x = newLength / wallGeometry.parameters.width;
-  }
-  setTimeout(() => resizeWall(15), 5000);
 
   // Loop
   function animate() {
@@ -91,12 +79,6 @@
     renderer.render(scene, camera);
   }
   animate();
-
-  window.addEventListener('resize', () => {
-    camera.aspect = window.innerWidth / window.innerHeight;
-    camera.updateProjectionMatrix();
-    renderer.setSize(window.innerWidth, window.innerHeight);
-  });
 </script>
 </body>
 </html>
