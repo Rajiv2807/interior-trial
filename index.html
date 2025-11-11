@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Three.js Interior Trial – Textured</title>
+  <title>Three.js Simple Room with Wooden Floor</title>
   <style>
     body { margin: 0; overflow: hidden; }
     canvas { display: block; }
@@ -12,19 +12,21 @@
 <script type="module">
   import * as THREE from 'https://unpkg.com/three@0.126.1/build/three.module.js';
   import { OrbitControls } from 'https://unpkg.com/three@0.126.1/examples/jsm/controls/OrbitControls.js';
-  import { DragControls } from 'https://unpkg.com/three@0.126.1/examples/jsm/controls/DragControls.js';
-  import { GLTFLoader } from 'https://unpkg.com/three@0.126.1/examples/jsm/loaders/GLTFLoader.js';
 
+  // Scene
   const scene = new THREE.Scene();
   scene.background = new THREE.Color(0xf0f0f0);
 
+  // Camera
   const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
-  camera.position.set(12, 12, 18);
+  camera.position.set(10, 8, 12);
 
+  // Renderer
   const renderer = new THREE.WebGLRenderer({ antialias: true });
   renderer.setSize(window.innerWidth, window.innerHeight);
   document.body.appendChild(renderer.domElement);
 
+  // Controls
   const controls = new OrbitControls(camera, renderer.domElement);
 
   // Lights
@@ -36,7 +38,7 @@
   // Texture loader
   const texLoader = new THREE.TextureLoader();
 
-  // Floor with wood texture
+  // Wooden floor
   const woodTex = texLoader.load('./assets/wood.jpg');
   woodTex.wrapS = woodTex.wrapT = THREE.RepeatWrapping;
   woodTex.repeat.set(4, 4);
@@ -48,8 +50,7 @@
   floor.rotation.x = -Math.PI / 2;
   scene.add(floor);
 
-  // Walls with marble texture
-  const marbleTex = texLoader.load('./assets/marble.jpg');
+  // Simple white walls (extruded rectangle)
   const shape = new THREE.Shape();
   shape.moveTo(0, 0);
   shape.lineTo(10, 0);
@@ -59,34 +60,12 @@
 
   const walls = new THREE.Mesh(
     new THREE.ExtrudeGeometry(shape, { depth: 3, bevelEnabled: false }),
-    new THREE.MeshLambertMaterial({ map: marbleTex })
+    new THREE.MeshLambertMaterial({ color: 0xffffff })
   );
   walls.position.set(-5, 0, -4);
   scene.add(walls);
 
-  // Furniture loader
-  const loader = new GLTFLoader();
-  const furniture = [];
-
-  function loadModel(path, position) {
-    loader.load(path, (gltf) => {
-      const model = gltf.scene;
-      model.position.copy(position);
-      model.scale.set(1, 1, 1);
-      scene.add(model);
-      furniture.push(model);
-      dragControls.objects = furniture;
-    });
-  }
-
-  loadModel('./assets/chair.glb', new THREE.Vector3(2, 0, 2));
-  loadModel('./assets/sofa.glb', new THREE.Vector3(-3, 0, 0));
-  loadModel('./assets/table.glb', new THREE.Vector3(0, 0, -3));
-
-  const dragControls = new DragControls(furniture, camera, renderer.domElement);
-  dragControls.addEventListener('dragstart', () => controls.enabled = false);
-  dragControls.addEventListener('dragend', () => controls.enabled = true);
-
+  // Animation loop
   function animate() {
     requestAnimationFrame(animate);
     controls.update();
@@ -94,6 +73,7 @@
   }
   animate();
 
+  // Resize handling
   window.addEventListener('resize', () => {
     camera.aspect = window.innerWidth / window.innerHeight;
     camera.updateProjectionMatrix();
