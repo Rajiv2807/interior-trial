@@ -128,13 +128,13 @@
   const loader = new GLTFLoader();
   loader.load('./assets/chandelier.glb', (gltf) => {
     const chandelier = gltf.scene;
-    chandelier.position.set(0, 9, 0); // hang from ceiling center
+    chandelier.position.set(0, 7.5, 0); // hang from ceiling center
     chandelier.scale.set(3, 3, 3);    // scale up for visibility
     scene.add(chandelier);
 
     // Add point light inside chandelier
     const chandelierLight = new THREE.PointLight(0xffeecc, 1.5, 15, 2);
-    chandelierLight.position.set(0, 9, 0);
+    chandelierLight.position.set(0, 7.5, 0);
     scene.add(chandelierLight);
   });
 
