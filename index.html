@@ -142,11 +142,11 @@
     mouse.y = -(clientY / window.innerHeight) * 2 + 1;
 
     raycaster.setFromCamera(mouse, camera);
-    const intersects = raycaster.intersectObject(table, true);
+    const intersects = raycaster.intersectObject(table, true); // ✅ whole table
 
     if (intersects.length > 0) {
       selectedObject = table;
-      offset.copy(intersects[0].point).sub(selectedObject.position);
+      offset.copy(intersects[0].point).sub(table.position);
       controls.enabled = false;
     }
   }
