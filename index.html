@@ -47,7 +47,7 @@
   // Texture loader
   const texLoader = new THREE.TextureLoader();
 
-  // Marble floor
+  // Floor
   const marbleTex = texLoader.load('./assets/marble.jpg');
   marbleTex.wrapS = marbleTex.wrapT = THREE.RepeatWrapping;
   marbleTex.repeat.set(4, 4);
@@ -63,52 +63,42 @@
   floor.rotation.x = -Math.PI / 2;
   scene.add(floor);
 
-  // Wood walls & ceiling
+  // Walls & ceiling
   const woodTex = texLoader.load('./assets/wood.jpg');
   woodTex.wrapS = woodTex.wrapT = THREE.RepeatWrapping;
   woodTex.repeat.set(2, 2);
 
-  const wallMaterial = new THREE.MeshStandardMaterial({
-    map: woodTex,
-    roughness: 0.8,
-    metalness: 0.0
-  });
+  const wallMaterial = new THREE.MeshStandardMaterial({ map: woodTex, roughness: 0.8 });
   const wallGeo = new THREE.PlaneGeometry(20, 10);
 
-  // Back wall
   const backWall = new THREE.Mesh(wallGeo, wallMaterial);
   backWall.position.set(0, 5, -10);
   scene.add(backWall);
 
-  // Front wall
   const frontWall = new THREE.Mesh(wallGeo, wallMaterial);
   frontWall.position.set(0, 5, 10);
   frontWall.rotation.y = Math.PI;
   scene.add(frontWall);
 
-  // Left wall
   const leftWall = new THREE.Mesh(wallGeo, wallMaterial);
   leftWall.position.set(-10, 5, 0);
   leftWall.rotation.y = Math.PI / 2;
   scene.add(leftWall);
 
-  // Right wall
   const rightWall = new THREE.Mesh(wallGeo, wallMaterial);
   rightWall.position.set(10, 5, 0);
   rightWall.rotation.y = -Math.PI / 2;
   scene.add(rightWall);
 
-  // Ceiling
-  const ceiling = new THREE.Mesh(
-    new THREE.PlaneGeometry(20, 20),
-    wallMaterial
-  );
+  const ceiling = new THREE.Mesh(new THREE.PlaneGeometry(20, 20), wallMaterial);
   ceiling.rotation.x = Math.PI / 2;
   ceiling.position.y = 10;
   scene.add(ceiling);
 
-  // --- Load chandelier ---
+  // Loader
   const loader = new GLTFLoader();
+
+  // Chandelier
   loader.load('./assets/chandelier.glb', (gltf) => {
     const chandelier = gltf.scene;
     chandelier.scale.set(0.005, 0.005, 0.005);
@@ -120,7 +110,7 @@
     scene.add(chandelierLight);
   });
 
-  // --- Load sofas ---
+  // Sofas
   let sofa1, sofa2, table;
   loader.load('./assets/sofa.glb', (gltf) => {
     sofa1 = gltf.scene.clone();
@@ -138,7 +128,7 @@
     scene.add(sofa2);
   });
 
-  // --- Load coffee table ---
+  // Coffee table
   loader.load('./assets/table.glb', (gltf) => {
     table = gltf.scene;
     table.name = "table";
@@ -147,7 +137,7 @@
     scene.add(table);
   });
 
-  // --- Load TV ---
+  // TV
   loader.load('./assets/tv.glb', (gltf) => {
     const tv = gltf.scene;
     tv.scale.set(8, 8, 8);
@@ -156,7 +146,7 @@
     scene.add(tv);
   });
 
-  // --- Dragging logic ---
+  // Dragging logic
   const raycaster = new THREE.Raycaster();
   const mouse = new THREE.Vector2();
   let selectedObject = null;
@@ -170,14 +160,15 @@
     const intersects = raycaster.intersectObjects([sofa1, sofa2, table], true);
 
     if (intersects.length > 0) {
-      selectedObject = intersects[0].object;
-      while (selectedObject.parent && !selectedObject.name) {
-        selectedObject = selectedObject.parent;
+      let obj = intersects[0].object;
+      while (obj.parent && !obj.name) {
+        obj = obj.parent;
       }
-      offset.copy(intersects[0].point).sub(selectedObject.position);
-
-      // 🔴 Disable OrbitControls while dragging
-      controls.enabled = false;
+      if (obj.name === "sofa1" || obj.name === "sofa2" || obj.name === "table") {
+        selectedObject = obj;
+        offset.copy(intersects[0].point).sub(selectedObject.position);
+        controls.enabled = false; // disable orbit controls
+      }
     }
   });
 
@@ -198,8 +189,7 @@
 
   window.addEventListener('mouseup', () => {
     selectedObject = null;
-    // 🟢 Re-enable OrbitControls after dragging
-    controls.enabled = true;
+    controls.enabled = true; // re-enable orbit controls
   });
 
   // Animate
@@ -210,7 +200,7 @@
   }
   animate();
 
-  // Resize handling
+  // Resize
   window.addEventListener('resize', () => {
     camera.aspect = window.innerWidth / window.innerHeight;
     camera.updateProjectionMatrix();
