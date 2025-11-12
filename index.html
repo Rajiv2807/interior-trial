@@ -132,6 +132,14 @@
     chandelier.scale.set(3, 3, 3);    // scale up for visibility
     scene.add(chandelier);
 
+    // Debug: log bounding box
+  const box = new THREE.Box3().setFromObject(chandelier);
+  console.log('Chandelier bounds:', box);
+
+  // Add a helper box so you can see where it is
+  const helper = new THREE.Box3Helper(box, 0xff0000);
+  scene.add(helper);
+    
     // Add point light inside chandelier
     const chandelierLight = new THREE.PointLight(0xffeecc, 1.5, 15, 2);
     chandelierLight.position.set(0, 7.5, 0);
