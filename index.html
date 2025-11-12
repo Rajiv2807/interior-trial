@@ -142,13 +142,13 @@
   loader.load('./assets/sofa.glb', (gltf) => {
     const sofa1 = gltf.scene.clone();
     sofa1.scale.set(0.1, 0.1, 0.1);   // adjust scale to fit room
-    sofa1.position.set(0, 0, -4);        // left side of center
+    sofa1.position.set(0, 0, -4.5);        // left side of center
     sofa1.rotation.y = 0;      // face toward other sofa
     scene.add(sofa1);
 
     const sofa2 = gltf.scene.clone();
     sofa2.scale.set(0.1, 0.1, 0.1);
-    sofa2.position.set(0, 0, 4);         // right side of center
+    sofa2.position.set(0, 0, 4.5);         // right side of center
     sofa2.rotation.y = Math.PI / 2;     // face toward sofa1
     scene.add(sofa2);
   });
