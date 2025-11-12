@@ -81,11 +81,11 @@
   // Loader
   const loader = new GLTFLoader();
 
-  // ✅ Chandelier restored
+  // ✅ Chandelier with scale 0.005
   loader.load('./assets/chandelier.glb', (gltf) => {
     const chandelier = gltf.scene;
-    chandelier.scale.set(0.005, 0.005, 0.005); // larger so it's visible
-    chandelier.position.set(0, 7, 0);       // hang below ceiling
+    chandelier.scale.set(0.005, 0.005, 0.005); // fixed scale
+    chandelier.position.set(0, 7, 0);          // hang below ceiling
     scene.add(chandelier);
 
     const chandelierLight = new THREE.PointLight(0xffeecc, 2, 20, 2);
@@ -108,14 +108,18 @@
     scene.add(sofa2);
   });
 
-  // Coffee table (movable)
-  let table;
+  // Coffee table (movable + BoxHelper outline)
+  let table, tableHelper;
   loader.load('./assets/table.glb', (gltf) => {
     table = gltf.scene;
     table.name = "table";
     table.scale.set(0.5, 0.5, 0.5);
     table.position.set(0, 0, 0);
     scene.add(table);
+
+    // ✅ Add BoxHelper outline for debugging
+    tableHelper = new THREE.BoxHelper(table, 0xff0000);
+    scene.add(tableHelper);
   });
 
   // TV on opposite wall (right wall), inverted
@@ -158,6 +162,7 @@
       if (planeIntersect.length > 0) {
         selectedObject.position.copy(planeIntersect[0].point.sub(offset));
         selectedObject.position.y = 0;
+        if (tableHelper) tableHelper.update(); // keep outline in sync
       }
     }
   }
