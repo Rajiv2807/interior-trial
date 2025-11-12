@@ -129,16 +129,9 @@
   loader.load('./assets/chandelier.glb', (gltf) => {
     const chandelier = gltf.scene;
     chandelier.position.set(0, 8.5, 0); // hang from ceiling center
-    chandelier.scale.set(0.01, 0.01, 0.01);    // scale up for visibility
+    chandelier.scale.set(0.005, 0.005, 0.005);    // scale up for visibility
     scene.add(chandelier);
 
-    // Debug: log bounding box
-  const box = new THREE.Box3().setFromObject(chandelier);
-  console.log('Chandelier bounds:', box);
-
-  // Add a helper box so you can see where it is
-  const helper = new THREE.Box3Helper(box, 0xff0000);
-  scene.add(helper);
     
     // Add point light inside chandelier
     const chandelierLight = new THREE.PointLight(0xffeecc, 2, 20, 2);
