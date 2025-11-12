@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Three.js Room – Movable Table + Fixed Sofas + TV Opposite Wall</title>
+  <title>Three.js Room – Movable Table Only</title>
   <style>
     body { margin: 0; overflow: hidden; }
     canvas { display: block; }
@@ -14,7 +14,6 @@
   import { OrbitControls } from 'https://unpkg.com/three@0.126.1/examples/jsm/controls/OrbitControls.js';
   import { GLTFLoader } from 'https://unpkg.com/three@0.126.1/examples/jsm/loaders/GLTFLoader.js';
 
-  // Scene setup
   const scene = new THREE.Scene();
   scene.background = new THREE.Color(0xf0f0f0);
 
@@ -29,10 +28,6 @@
   const controls = new OrbitControls(camera, renderer.domElement);
   controls.enableDamping = true;
   controls.dampingFactor = 0.05;
-  controls.minDistance = 2;
-  controls.maxDistance = 25;
-  controls.maxPolarAngle = Math.PI / 2.2;
-  controls.minPolarAngle = 0.2;
   controls.target.set(0, 5, 0);
 
   // Lights
@@ -56,8 +51,6 @@
 
   // Walls
   const woodTex = texLoader.load('./assets/wood.jpg');
-  woodTex.wrapS = woodTex.wrapT = THREE.RepeatWrapping;
-  woodTex.repeat.set(2, 2);
   const wallMaterial = new THREE.MeshStandardMaterial({ map: woodTex, roughness: 0.8 });
   const wallGeo = new THREE.PlaneGeometry(20, 10);
 
@@ -88,29 +81,15 @@
   // Loader
   const loader = new GLTFLoader();
 
-  // Chandelier
-  loader.load('./assets/chandelier.glb', (gltf) => {
-    const chandelier = gltf.scene;
-    chandelier.scale.set(0.005, 0.005, 0.005);
-    chandelier.position.set(0, 8.5, 0);
-    scene.add(chandelier);
-
-    const chandelierLight = new THREE.PointLight(0xffeecc, 2, 20, 2);
-    chandelierLight.position.set(0, 8.5, 0);
-    scene.add(chandelierLight);
-  });
-
   // Sofas (fixed)
   loader.load('./assets/sofa.glb', (gltf) => {
     const sofa1 = gltf.scene.clone();
-    sofa1.name = "sofa1";
     sofa1.scale.set(0.1, 0.1, 0.1);
     sofa1.position.set(0, 0, -4.5);
     sofa1.rotation.y = Math.PI / 2;
     scene.add(sofa1);
 
     const sofa2 = gltf.scene.clone();
-    sofa2.name = "sofa2";
     sofa2.scale.set(0.1, 0.1, 0.1);
     sofa2.position.set(0, 0, 4.5);
     sofa2.rotation.y = -Math.PI / 2;
@@ -119,21 +98,19 @@
 
   // Coffee table (movable)
   let table;
-  const draggableObjects = [];
   loader.load('./assets/table.glb', (gltf) => {
     table = gltf.scene;
     table.name = "table";
     table.scale.set(0.5, 0.5, 0.5);
     table.position.set(0, 0, 0);
     scene.add(table);
-    draggableObjects.push(table);
   });
 
   // TV on opposite wall (right wall), inverted
   loader.load('./assets/tv.glb', (gltf) => {
     const tv = gltf.scene;
     tv.scale.set(8, 8, 8);
-    tv.position.set(9.5, 0.5, 0);   // against right wall
+    tv.position.set(8.5, 0.5, 0);   // against right wall
     tv.rotation.y = Math.PI;        // inverted to face inward
     scene.add(tv);
   });
@@ -145,20 +122,17 @@
   let offset = new THREE.Vector3();
 
   function startDrag(clientX, clientY) {
+    if (!table) return; // table not loaded yet
     mouse.x = (clientX / window.innerWidth) * 2 - 1;
     mouse.y = -(clientY / window.innerHeight) * 2 + 1;
 
     raycaster.setFromCamera(mouse, camera);
-    const intersects = raycaster.intersectObjects(draggableObjects, true);
+    const intersects = raycaster.intersectObjects(table.children, true);
 
     if (intersects.length > 0) {
-      let obj = intersects[0].object;
-      while (obj.parent && !obj.name) obj = obj.parent;
-      if (obj.name === "table") {
-        selectedObject = obj;
-        offset.copy(intersects[0].point).sub(selectedObject.position);
-        controls.enabled = false; // disable orbit controls
-      }
+      selectedObject = table; // always move parent
+      offset.copy(intersects[0].point).sub(selectedObject.position);
+      controls.enabled = false;
     }
   }
 
@@ -178,7 +152,7 @@
 
   function endDrag() {
     selectedObject = null;
-    controls.enabled = true; // re-enable orbit controls
+    controls.enabled = true;
   }
 
   // Mouse events
@@ -186,7 +160,7 @@
   window.addEventListener('mousemove', (e) => moveDrag(e.clientX, e.clientY));
   window.addEventListener('mouseup', endDrag);
 
-  // Touch events
+  // Touch events (for touchpad/touchscreen)
   window.addEventListener('touchstart', (e) => {
     const touch = e.touches[0];
     startDrag(touch.clientX, touch.clientY);
