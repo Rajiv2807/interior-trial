@@ -152,7 +152,7 @@
     const tv = gltf.scene;
     tv.scale.set(8, 8, 8);
     tv.position.set(-8.5, 0.5, 0);
-    //tv.rotation.y = Math.PI / 2;
+    tv.rotation.y = Math.PI / 2;
     scene.add(tv);
   });
 
@@ -175,6 +175,9 @@
         selectedObject = selectedObject.parent;
       }
       offset.copy(intersects[0].point).sub(selectedObject.position);
+
+      // 🔴 Disable OrbitControls while dragging
+      controls.enabled = false;
     }
   });
 
@@ -195,6 +198,8 @@
 
   window.addEventListener('mouseup', () => {
     selectedObject = null;
+    // 🟢 Re-enable OrbitControls after dragging
+    controls.enabled = true;
   });
 
   // Animate
