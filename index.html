@@ -127,12 +127,11 @@
     scene.add(table);
   });
 
-  // TV (rotation line removed)
+  // TV (no rotation line)
   loader.load('./assets/tv.glb', (gltf) => {
     const tv = gltf.scene;
     tv.scale.set(8, 8, 8);
     tv.position.set(-8.5, 0.5, 0);
-    // tv.rotation.y = Math.PI / 2;  <-- removed
     scene.add(tv);
   });
 
@@ -155,7 +154,7 @@
       if (["sofa1", "sofa2", "table"].includes(obj.name)) {
         selectedObject = obj;
         offset.copy(intersects[0].point).sub(selectedObject.position);
-        controls.enabled = false;
+        controls.enabled = false; // disable orbit controls
       }
     }
   }
@@ -176,7 +175,7 @@
 
   function endDrag() {
     selectedObject = null;
-    controls.enabled = true;
+    controls.enabled = true; // re-enable orbit controls
   }
 
   // Mouse events
