@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Three.js Room – Movable Sofas + Coffee Table + TV</title>
+  <title>Three.js Room – Movable Table + Fixed Sofas + TV Opposite Wall</title>
   <style>
     body { margin: 0; overflow: hidden; }
     canvas { display: block; }
@@ -100,30 +100,26 @@
     scene.add(chandelierLight);
   });
 
-  // Draggable objects array
-  const draggableObjects = [];
-  let sofa1, sofa2, table;
-
-  // Sofas
+  // Sofas (fixed)
   loader.load('./assets/sofa.glb', (gltf) => {
-    sofa1 = gltf.scene.clone();
+    const sofa1 = gltf.scene.clone();
     sofa1.name = "sofa1";
     sofa1.scale.set(0.1, 0.1, 0.1);
     sofa1.position.set(0, 0, -4.5);
     sofa1.rotation.y = Math.PI / 2;
     scene.add(sofa1);
-    draggableObjects.push(sofa1);
 
-    sofa2 = gltf.scene.clone();
+    const sofa2 = gltf.scene.clone();
     sofa2.name = "sofa2";
     sofa2.scale.set(0.1, 0.1, 0.1);
     sofa2.position.set(0, 0, 4.5);
     sofa2.rotation.y = -Math.PI / 2;
     scene.add(sofa2);
-    draggableObjects.push(sofa2);
   });
 
-  // Coffee table
+  // Coffee table (movable)
+  let table;
+  const draggableObjects = [];
   loader.load('./assets/table.glb', (gltf) => {
     table = gltf.scene;
     table.name = "table";
@@ -133,15 +129,16 @@
     draggableObjects.push(table);
   });
 
-  // TV (no forced rotation)
+  // TV on opposite wall (right wall), inverted
   loader.load('./assets/tv.glb', (gltf) => {
     const tv = gltf.scene;
     tv.scale.set(8, 8, 8);
-    tv.position.set(-8.5, 0.5, 0);
+    tv.position.set(9.5, 0.5, 0);   // against right wall
+    tv.rotation.y = Math.PI;        // inverted to face inward
     scene.add(tv);
   });
 
-  // Dragging logic (mouse + touch)
+  // Dragging logic (only table)
   const raycaster = new THREE.Raycaster();
   const mouse = new THREE.Vector2();
   let selectedObject = null;
@@ -157,7 +154,7 @@
     if (intersects.length > 0) {
       let obj = intersects[0].object;
       while (obj.parent && !obj.name) obj = obj.parent;
-      if (["sofa1", "sofa2", "table"].includes(obj.name)) {
+      if (obj.name === "table") {
         selectedObject = obj;
         offset.copy(intersects[0].point).sub(selectedObject.position);
         controls.enabled = false; // disable orbit controls
