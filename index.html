@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Three.js Room – Chandelier + Sofas + TV</title>
+  <title>Three.js Room – Movable Sofas + Coffee Table + TV</title>
   <style>
     body { margin: 0; overflow: hidden; }
     canvas { display: block; }
@@ -121,23 +121,27 @@
   });
 
   // --- Load sofas ---
+  let sofa1, sofa2, table;
   loader.load('./assets/sofa.glb', (gltf) => {
-    const sofa1 = gltf.scene.clone();
+    sofa1 = gltf.scene.clone();
+    sofa1.name = "sofa1";
     sofa1.scale.set(0.1, 0.1, 0.1);
     sofa1.position.set(0, 0, -4.5);
-    sofa1.rotation.y = Math.PI / 2;   // face toward center
+    sofa1.rotation.y = Math.PI / 2;
     scene.add(sofa1);
 
-    const sofa2 = gltf.scene.clone();
+    sofa2 = gltf.scene.clone();
+    sofa2.name = "sofa2";
     sofa2.scale.set(0.1, 0.1, 0.1);
     sofa2.position.set(0, 0, 4.5);
-    sofa2.rotation.y = -Math.PI / 2;  // face toward sofa1
+    sofa2.rotation.y = -Math.PI / 2;
     scene.add(sofa2);
   });
 
   // --- Load coffee table ---
   loader.load('./assets/table.glb', (gltf) => {
-    const table = gltf.scene;
+    table = gltf.scene;
+    table.name = "table";
     table.scale.set(0.5, 0.5, 0.5);
     table.position.set(0, 0, 0);
     scene.add(table);
@@ -146,10 +150,51 @@
   // --- Load TV ---
   loader.load('./assets/tv.glb', (gltf) => {
     const tv = gltf.scene;
-    tv.scale.set(8, 8, 8);       // adjust as needed
-    tv.position.set(-8.5, 0.5, 0);        // against left wall, on floor
-    //tv.rotation.y = Math.PI ;          // face toward sofas
+    tv.scale.set(8, 8, 8);
+    tv.position.set(-8.5, 0.5, 0);
+    //tv.rotation.y = Math.PI / 2;
     scene.add(tv);
+  });
+
+  // --- Dragging logic ---
+  const raycaster = new THREE.Raycaster();
+  const mouse = new THREE.Vector2();
+  let selectedObject = null;
+  let offset = new THREE.Vector3();
+
+  window.addEventListener('mousedown', (event) => {
+    mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+    mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+
+    raycaster.setFromCamera(mouse, camera);
+    const intersects = raycaster.intersectObjects([sofa1, sofa2, table], true);
+
+    if (intersects.length > 0) {
+      selectedObject = intersects[0].object;
+      while (selectedObject.parent && !selectedObject.name) {
+        selectedObject = selectedObject.parent;
+      }
+      offset.copy(intersects[0].point).sub(selectedObject.position);
+    }
+  });
+
+  window.addEventListener('mousemove', (event) => {
+    if (selectedObject) {
+      mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+      mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+
+      raycaster.setFromCamera(mouse, camera);
+      const planeIntersect = raycaster.intersectObject(floor);
+
+      if (planeIntersect.length > 0) {
+        selectedObject.position.copy(planeIntersect[0].point.sub(offset));
+        selectedObject.position.y = 0; // keep on floor
+      }
+    }
+  });
+
+  window.addEventListener('mouseup', () => {
+    selectedObject = null;
   });
 
   // Animate
