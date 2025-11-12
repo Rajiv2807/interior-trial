@@ -146,9 +146,9 @@
   // --- Load TV ---
   loader.load('./assets/tv.glb', (gltf) => {
     const tv = gltf.scene;
-    tv.scale.set(0.3, 0.3, 0.3);       // adjust as needed
+    tv.scale.set(1.5, 1.5, 1.5);       // adjust as needed
     tv.position.set(-8.5, 0.5, 0);        // against left wall, on floor
-    tv.rotation.y = Math.PI / 2;          // face toward sofas
+    tv.rotation.y = Math.PI ;          // face toward sofas
     scene.add(tv);
   });
 
