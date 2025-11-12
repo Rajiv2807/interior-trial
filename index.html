@@ -100,8 +100,11 @@
     scene.add(chandelierLight);
   });
 
-  // Sofas
+  // Draggable objects array
+  const draggableObjects = [];
   let sofa1, sofa2, table;
+
+  // Sofas
   loader.load('./assets/sofa.glb', (gltf) => {
     sofa1 = gltf.scene.clone();
     sofa1.name = "sofa1";
@@ -109,6 +112,7 @@
     sofa1.position.set(0, 0, -4.5);
     sofa1.rotation.y = Math.PI / 2;
     scene.add(sofa1);
+    draggableObjects.push(sofa1);
 
     sofa2 = gltf.scene.clone();
     sofa2.name = "sofa2";
@@ -116,6 +120,7 @@
     sofa2.position.set(0, 0, 4.5);
     sofa2.rotation.y = -Math.PI / 2;
     scene.add(sofa2);
+    draggableObjects.push(sofa2);
   });
 
   // Coffee table
@@ -125,9 +130,10 @@
     table.scale.set(0.5, 0.5, 0.5);
     table.position.set(0, 0, 0);
     scene.add(table);
+    draggableObjects.push(table);
   });
 
-  // TV (no rotation line)
+  // TV (no forced rotation)
   loader.load('./assets/tv.glb', (gltf) => {
     const tv = gltf.scene;
     tv.scale.set(8, 8, 8);
@@ -146,7 +152,7 @@
     mouse.y = -(clientY / window.innerHeight) * 2 + 1;
 
     raycaster.setFromCamera(mouse, camera);
-    const intersects = raycaster.intersectObjects([sofa1, sofa2, table], true);
+    const intersects = raycaster.intersectObjects(draggableObjects, true);
 
     if (intersects.length > 0) {
       let obj = intersects[0].object;
