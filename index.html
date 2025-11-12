@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Three.js Room – Chandelier Light</title>
+  <title>Three.js Room – Chandelier + Sofas</title>
   <style>
     body { margin: 0; overflow: hidden; }
     canvas { display: block; }
@@ -128,15 +128,29 @@
   const loader = new GLTFLoader();
   loader.load('./assets/chandelier.glb', (gltf) => {
     const chandelier = gltf.scene;
-    chandelier.position.set(0, 8.5, 0); // hang from ceiling center
-    chandelier.scale.set(0.005, 0.005, 0.005);    // scale up for visibility
+    chandelier.scale.set(0.005, 0.005, 0.005); // keep scale 0.005
+    chandelier.position.set(0, 8.5, 0);        // hang below ceiling
     scene.add(chandelier);
 
-    
     // Add point light inside chandelier
     const chandelierLight = new THREE.PointLight(0xffeecc, 2, 20, 2);
     chandelierLight.position.set(0, 8.5, 0);
     scene.add(chandelierLight);
+  });
+
+  // --- Load sofas ---
+  loader.load('./assets/sofa.glb', (gltf) => {
+    const sofa1 = gltf.scene.clone();
+    sofa1.scale.set(0.02, 0.02, 0.02);   // adjust scale to fit room
+    sofa1.position.set(-3, 0, 0);        // left side of center
+    sofa1.rotation.y = Math.PI / 2;      // face toward other sofa
+    scene.add(sofa1);
+
+    const sofa2 = gltf.scene.clone();
+    sofa2.scale.set(0.02, 0.02, 0.02);
+    sofa2.position.set(3, 0, 0);         // right side of center
+    sofa2.rotation.y = -Math.PI / 2;     // face toward sofa1
+    scene.add(sofa2);
   });
 
   // Animate
