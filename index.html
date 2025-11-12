@@ -158,8 +158,11 @@
       raycaster.setFromCamera(mouse, camera);
       const planeIntersect = raycaster.intersectObject(floor);
       if (planeIntersect.length > 0) {
-        selectedObject.position.copy(planeIntersect[0].point);
-        selectedObject.position.y = 0;
+        selectedObject.position.set(
+          planeIntersect[0].point.x,
+          0,
+          planeIntersect[0].point.z
+        );
         if (tableHelper) tableHelper.update();
       }
     }
