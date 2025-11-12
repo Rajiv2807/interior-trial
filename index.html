@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Three.js Room – Movable Table Only</title>
+  <title>Three.js Room – Movable Table + Chandelier + TV Opposite Wall</title>
   <style>
     body { margin: 0; overflow: hidden; }
     canvas { display: block; }
@@ -81,6 +81,18 @@
   // Loader
   const loader = new GLTFLoader();
 
+  // ✅ Chandelier restored
+  loader.load('./assets/chandelier.glb', (gltf) => {
+    const chandelier = gltf.scene;
+    chandelier.scale.set(0.05, 0.05, 0.05); // larger so it's visible
+    chandelier.position.set(0, 7, 0);       // hang below ceiling
+    scene.add(chandelier);
+
+    const chandelierLight = new THREE.PointLight(0xffeecc, 2, 20, 2);
+    chandelierLight.position.set(0, 7, 0);
+    scene.add(chandelierLight);
+  });
+
   // Sofas (fixed)
   loader.load('./assets/sofa.glb', (gltf) => {
     const sofa1 = gltf.scene.clone();
@@ -110,7 +122,7 @@
   loader.load('./assets/tv.glb', (gltf) => {
     const tv = gltf.scene;
     tv.scale.set(8, 8, 8);
-    tv.position.set(8.5, 0.5, 0);   // against right wall
+    tv.position.set(9.5, 0.5, 0);   // against right wall
     tv.rotation.y = Math.PI;        // inverted to face inward
     scene.add(tv);
   });
@@ -122,7 +134,7 @@
   let offset = new THREE.Vector3();
 
   function startDrag(clientX, clientY) {
-    if (!table) return; // table not loaded yet
+    if (!table) return;
     mouse.x = (clientX / window.innerWidth) * 2 - 1;
     mouse.y = -(clientY / window.innerHeight) * 2 + 1;
 
@@ -130,7 +142,7 @@
     const intersects = raycaster.intersectObjects(table.children, true);
 
     if (intersects.length > 0) {
-      selectedObject = table; // always move parent
+      selectedObject = table;
       offset.copy(intersects[0].point).sub(selectedObject.position);
       controls.enabled = false;
     }
@@ -160,7 +172,7 @@
   window.addEventListener('mousemove', (e) => moveDrag(e.clientX, e.clientY));
   window.addEventListener('mouseup', endDrag);
 
-  // Touch events (for touchpad/touchscreen)
+  // Touch events
   window.addEventListener('touchstart', (e) => {
     const touch = e.touches[0];
     startDrag(touch.clientX, touch.clientY);
@@ -171,7 +183,6 @@
   });
   window.addEventListener('touchend', endDrag);
 
-  // Animate
   function animate() {
     requestAnimationFrame(animate);
     controls.update();
