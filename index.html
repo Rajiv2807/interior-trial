@@ -84,7 +84,7 @@
   // ✅ Chandelier restored
   loader.load('./assets/chandelier.glb', (gltf) => {
     const chandelier = gltf.scene;
-    chandelier.scale.set(0.05, 0.05, 0.05); // larger so it's visible
+    chandelier.scale.set(0.005, 0.005, 0.005); // larger so it's visible
     chandelier.position.set(0, 7, 0);       // hang below ceiling
     scene.add(chandelier);
 
