@@ -153,6 +153,13 @@
     scene.add(sofa2);
   });
 
+loader.load('./assets/table.glb', (gltf) => {
+  const table = gltf.scene;
+  table.scale.set(0.05, 0.05, 0.05);       // adjust based on model size
+  table.position.set(0, 0, 0);             // centered between sofas
+  scene.add(table);
+});
+  
   // Animate
   function animate() {
     requestAnimationFrame(animate);
